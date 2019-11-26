@@ -28,4 +28,11 @@ urlpatterns = [
    path('logout/', views.logout),
    path('captcha/', include('captcha.urls')),
    path('confirm/', views.user_confirm),
+   path('shop/',include('shop.urls',namespace='shop')),
+   path('cart/', include('cart.urls', namespace='cart')),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
