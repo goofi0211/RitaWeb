@@ -18,20 +18,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import  url
-from login import views
+
 urlpatterns = [
    path('admin/', admin.site.urls),
-   path('index/', views.index),
-   path('login/', views.login),
-   path('login2/', views.login2),
-   path('register/', views.register),
-   path('logout/', views.logout),
-   path('captcha/', include('captcha.urls')),
-   path('confirm/', views.user_confirm),
+   path('', include('homepage.urls',namespace='homepage')),
+   path('login/', include('login.urls',namespace='login')),
    path('shop/',include('shop.urls',namespace='shop')),
    path('cart/', include('cart.urls', namespace='cart')),
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

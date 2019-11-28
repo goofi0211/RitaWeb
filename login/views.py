@@ -19,7 +19,7 @@ def send_email(email, code):
                     如果你看到这条消息，说明你的邮箱服务器不提供HTML链接功能，请联系管理员！'''
 
     html_content = '''
-                    <p>感谢注册<a href="http://{}/confirm/?code={}" target=blank>www.liujiangblog.com</a>，\
+                    <p>感谢注册<a href="http://{}/login/confirm/?code={}" target=blank>www.liujiangblog.com</a>，\
                     这里是刘江的博客和教程站点，专注于Python、Django和机器学习技术的分享！</p>
                     <p>请点击站点链接完成注册确认！</p>
                     <p>此链接有效期为{}天！</p>
@@ -47,30 +47,8 @@ def index(request):
     return render(request, 'login/index.html')
 
 
-def login(request):
-    if request.method == "POST":
-        username = request.POST.get('username') #request.POST是一個字典型態 username對應form裡面的name attribute
-        password = request.POST.get('password')
-        print(username, password)
-        if username.strip() and password:  # 确保用户名和密码都不为空      
-            # 用户名字符合法性验证
-            # 密码长度验证
-            # 更多的其它验证.....
-            try: #驗證user有沒有在db裡
-                user = models.User.objects.get(name=username)
-            except:
-                message = '用戶不存在！'
-                return render(request, 'login/login.html',{'message': message})
-            if user.password == password:
-                return redirect('/index/')
-            else:
-                message = '密码不正确！'
-                return render(request, 'login/login.html', {'message': message})
-            return redirect('/index/')
-    return render(request, 'login/login.html')
-
 #利用form表單做出第二版login
-def login2(request):
+def login(request):
 	if request.session.get('is_login', None):  # 不允许重复登录
    		return redirect('/index/')
 	if request.method == 'POST':
@@ -83,24 +61,25 @@ def login2(request):
 				user = models.User.objects.get(name=username)
 			except :
 				message = '用户不存在！'
-				return render(request, 'login/login2.html', locals())
+				return render(request, 'login/login.html', locals())
 
 			if not user.has_confirmed:
 				message = '该用户还未经过邮件确认！'
-				return render(request, 'login/login2.html', locals())
+				return render(request, 'login/login.html', locals())
 
 			if user.password == hash_code(password):
-				request.session['is_login'] = True
-				request.session['user_name'] = user.name
-				return redirect('/index/')
+                request.session['is_login'] = True
+                request.session['user_name'] = user.name
+                is_login=rerequest.session.get('is_login')
+				return render(request, 'index/index.html', locals())
 			else:
 				message = '密码不正确！'
-				return render(request, 'login/login2.html', locals())
+				return render(request, 'login/login.html', locals())
 		else:
-			return render(request, 'login/login2.html', locals())
+			return render(request, 'login/login.html', locals())
 
 	login_form = forms.UserForm()
-	return render(request, 'login/login2.html', locals())
+	return render(request, 'login/login.html', locals())
 
 
 def register(request):
@@ -150,10 +129,10 @@ def register(request):
 def logout(request):
 	if not request.session.get('is_login', None):
         # 如果本来就未登录，也就没有登出一说
-		return redirect("/login2/")
+		return redirect("/login/")
     
 	request.session.flush()
-	return redirect("/login2/")
+	return redirect("/login/")
 
 
 def user_confirm(request):
