@@ -24,4 +24,5 @@ def cart_remove(request, product_id):
 
 def cart_detail(request):
     cart = Cart(request)
-    return render(request, 'cart/detail.html', {'cart': cart})
+    is_login=request.session.get('is_login')
+    return render(request, 'cart/detail.html', {'cart': cart,'is_login':is_login})
